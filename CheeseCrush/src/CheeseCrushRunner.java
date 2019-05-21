@@ -1,4 +1,7 @@
 import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+
 import javax.swing.*;
 
 // current plan: create array of color objects all extending the cheese class. put this in the canvas. then draw it out in the paint component.
@@ -17,10 +20,28 @@ public class CheeseCrushRunner {
 		CheeseCrushCanvas canvas = new CheeseCrushCanvas(WIDTH, HEIGHT);
 		canvas.setPreferredSize(new Dimension(WIDTH, HEIGHT));
 		
-		// panel is for literally the entire game play
-		JPanel panel = new JPanel();
+//		class CheeseMouseListener implements MouseListener {
+//			public void mouseClicked(MouseEvent e) {
+//			}
+//
+//			public void mousePressed(MouseEvent e) {
+//				canvas.checkClick(e.getX(), e.getY());
+//			}
+//
+//			public void mouseReleased(MouseEvent e) {				
+//			}
+//			
+//			public void mouseEntered(MouseEvent e) {
+//			}
+//			
+//			public void mouseExited(MouseEvent e) {
+//			}	
+//		}
+//		canvas.addMouseListener(new CheeseMouseListener());
 		
-		canvas.add(panel); // panel is inside the canvas
+//		JPanel panel = new JPanel();
+		
+//		canvas.add(panel); // panel is inside the canvas
 		frame.add(canvas);
 		frame.pack();
 		frame.setVisible(true);
