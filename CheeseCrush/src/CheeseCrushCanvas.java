@@ -2,7 +2,7 @@
 // normal combo 60 pt
 // striped 120 pt
 // wrapped 200 pt
-// string cheese 120 pt
+// string cheese 120 pt -- perhaps NAW
 // indv elimination 60 pt
 // bomb 200 pt
 // color bomb 280 pt
@@ -33,6 +33,17 @@ public class CheeseCrushCanvas extends JComponent {
 		fillGrid(cheeseGrid);
 	}
 	
+	public void checkPress(int x, int y) {
+		Cheese target = cheeseGrid[(x - 500)/50][(y - 50)/50];
+		
+	}
+	
+	public void reset() {
+		score = 0;
+		fillGrid(cheeseGrid);
+		repaint();
+	}
+	
 	public void paintComponent(Graphics gr) {
 		Graphics2D g = (Graphics2D) gr;
 		
@@ -59,34 +70,53 @@ public class CheeseCrushCanvas extends JComponent {
 		g.drawString("Cheese Crush!!!", 545, 580);
 		
 		// cheese/grid
-		Red red = new Red("normal");
-		g.drawImage(red.getImg(), 500, 50, this);
+		int x = 500;
+		int y = 50;
 		for (Cheese[] row : cheeseGrid) {
 			for (Cheese chz : row) {
-				g.drawImage(((Red)(cheeseGrid[3][4])).getImg(), 300, 300, this);
+				g.drawImage(chz.getImg(), x, y, this);
+				x += 50;
 			}
+			x = 500;
+			y += 50;
 		}
 	}
 	
 	// remember to make all the other cheeses !!
 	private void fillGrid(Cheese[][] grid) {
 		for (int i = 0; i < grid.length; i++) {
-			for (int j = 0; i < grid[0].length; i++) {
-				int choice = (int)(Math.random() * 12) + 1;
-				if (choice == 1 || choice == 2) {
-					grid[i][j] = new Red("normal");
-				} else if (choice == 3 || choice == 4) {
-					grid[i][j] = new Red("bomb");
-				} else if (choice == 5 || choice == 6) {
-					grid[i][j] = new Red("bottle");
-				} else if (choice == 7 || choice == 8) {
-					grid[i][j] = new Red("striped");
-				} else if (choice == 9 || choice == 10) {
-					grid[i][j] = new Red("wrapped");
-				} else {
-					grid[i][j] = new Red("normal");
+			for (int j = 0; j < grid[0].length; j++) {
+				grid[i][j] = chooseRandom();
+			}
+		}
+		for (int i = 0; i < grid.length; i++) {
+			for (int j = 0; j < grid[0].length; j++) {
+				// vertical match (3)
+				if (grid[i][j].equals(grid[i-1][j]) && grid[i][j].equals(grid[i+1][j])) {
+					
+				}
+				// horizontal match (3)
+				if (grid[i][j].equals(grid[i][j-1]) && grid[i][j].equals(grid[i][j+1])) {
+					
 				}
 			}
+		}
+	}
+	
+	private Cheese chooseRandom() {
+		int choice = (int)(Math.random() * 12) + 1;
+		if (choice == 1 || choice == 2) {
+			return new Red("normal");
+		} else if (choice == 3 || choice == 4) {
+			return new Orange("normal");
+		} else if (choice == 5 || choice == 6) {
+			return new Yellow("normal");
+		} else if (choice == 7 || choice == 8) {
+			return new Green("normal");
+		} else if (choice == 9 || choice == 10) {
+			return new Blue("normal");
+		} else {
+			return new Purple("normal");
 		}
 	}
 }

@@ -1,11 +1,24 @@
 import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 
 import javax.swing.*;
 
 // current plan: create array of color objects all extending the cheese class. put this in the canvas. then draw it out in the paint component.
 // https://mathbits.com/MathBits/Java/Graphics/Color.htm
+
+// place bottles in correct locations
+// place locks in correct locations
+// combinations code
+// score code
+// reset
+// shuffle
+// animate
+// music
+// sparkles :P
 
 public class CheeseCrushRunner {
 	private static final int WIDTH = 1240; //1280
@@ -20,24 +33,50 @@ public class CheeseCrushRunner {
 		CheeseCrushCanvas canvas = new CheeseCrushCanvas(WIDTH, HEIGHT);
 		canvas.setPreferredSize(new Dimension(WIDTH, HEIGHT));
 		
-//		class CheeseMouseListener implements MouseListener {
-//			public void mouseClicked(MouseEvent e) {
-//			}
-//
-//			public void mousePressed(MouseEvent e) {
-//				canvas.checkClick(e.getX(), e.getY());
-//			}
-//
-//			public void mouseReleased(MouseEvent e) {				
-//			}
-//			
-//			public void mouseEntered(MouseEvent e) {
-//			}
-//			
-//			public void mouseExited(MouseEvent e) {
-//			}	
-//		}
-//		canvas.addMouseListener(new CheeseMouseListener());
+		class CheeseMouseMotionListener implements MouseMotionListener {
+			public void mouseDragged(MouseEvent e) {
+			}
+			
+			public void mouseMoved(MouseEvent e) {
+			}
+		}
+		canvas.addMouseMotionListener(new CheeseMouseMotionListener());
+		
+		class CheeseMouseListener implements MouseListener {
+			public void mouseClicked(MouseEvent e) {
+			}
+
+			public void mousePressed(MouseEvent e) {
+				canvas.checkPress(e.getX(), e.getY());
+			}
+
+			public void mouseReleased(MouseEvent e) {				
+			}
+			
+			public void mouseEntered(MouseEvent e) {
+			}
+			
+			public void mouseExited(MouseEvent e) {
+			}	
+		}
+		canvas.addMouseListener(new CheeseMouseListener());
+		
+		class ClickbaitKeyListener implements KeyListener {
+			public void keyTyped(KeyEvent e) {
+			}
+			
+			public void keyPressed(KeyEvent e) {
+				if (e.getKeyChar() == 'r') {
+					canvas.reset();
+				}
+			}
+
+			public void keyReleased(KeyEvent e) {
+			}
+		}
+		canvas.addKeyListener(new ClickbaitKeyListener());
+		canvas.setFocusable(true);
+		canvas.requestFocus();
 		
 //		JPanel panel = new JPanel();
 		

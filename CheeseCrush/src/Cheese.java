@@ -11,4 +11,8 @@ public abstract class Cheese {
 	public Image getImg() {
 		return img;
 	}
+	
+	public String getStatus() {
+		return status;
+	}
 }
