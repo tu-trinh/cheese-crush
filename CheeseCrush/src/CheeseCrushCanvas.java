@@ -31,12 +31,14 @@ public class CheeseCrushCanvas extends JComponent {
 	private int clickCol;
 	private int releaseRow;
 	private int releaseCol;
+	private int wineHeight;
+	private int wineY;
 	
 	public CheeseCrushCanvas(int width, int height) {
 		WIDTH = width;
 		HEIGHT = height;
 		score = 0;
-		moves = 60;
+		moves = 40;
 		game = true;
 		grayBlue = new Color(178, 201, 216);
 		grayerBlue = new Color(178, 195, 206);
@@ -50,6 +52,8 @@ public class CheeseCrushCanvas extends JComponent {
 		clickCol = 0;
 		releaseRow = 0;
 		releaseCol = 0;
+		wineHeight = 4; // +50 if bottle
+		wineY = 498; // -50 if bottle
 	}
 	
 	public void checkPress(int x, int y) {
@@ -82,7 +86,7 @@ public class CheeseCrushCanvas extends JComponent {
 	}
 	
 	private void swap(int unoRow, int unoCol, int dosRow, int dosCol) {
-		if (game) {
+		if (game && (unoRow == dosRow+1 || unoRow == dosRow-1 || unoCol == dosCol+1 || unoCol == dosCol-1)) {
 			Cheese temp = cheeseGrid[unoRow][unoCol];
 			System.out.println("Uno 1: " + cheeseGrid[unoRow][unoCol]);
 			cheeseGrid[unoRow][unoCol] = cheeseGrid[dosRow][dosCol];
@@ -94,41 +98,36 @@ public class CheeseCrushCanvas extends JComponent {
 			// next two lines: only if legit match
 			moves--;
 			repaint();
-			
-			// also how to call paintComponent again to edit wine rectangle??????????????????????????????
-			
+						
 			// horizontal matches
 			int horizCount = 0;
 			int startCol = 0;
 			for (int i = dosRow; i < dosRow + 1; i++) {
-				Cheese cur = cheeseGrid[dosRow][0];
+				Cheese cur = cheeseGrid[dosRow][startCol];
 				for (int j = 0; j < cheeseGrid[0].length; j++) {
 					if (cheeseGrid[i][j].equals(cur)) {
 						horizCount++;
 					} else {
 						cur = cheeseGrid[i][j];
 						startCol = j;
-						horizCount = 0;
+						horizCount = 1;
 					}
 				}
-				switch (horizCount) {
-					case 5:
-						cheeseGrid[i][startCol] = null;
-						cheeseGrid[i][startCol+1] = null;
-						cheeseGrid[i][startCol+2] = null;
-						cheeseGrid[i][startCol+3] = null;
-						cheeseGrid[i][startCol+4] = null;
-						repaint();
-						break;
-					case 4:
-						// begone thot
-						break;
-					case 3:
-						// begone thot
-						break;
-					default:
-						// switch back, or just call swap in the cases and not here
-						// call to paintComponent to say no can do buckaroo
+				if (horizCount == 5) {
+					cheeseGrid[i][startCol] = new Purple("bomb");
+					cheeseGrid[i][startCol+1] = null;
+					cheeseGrid[i][startCol+2] = null;
+					cheeseGrid[i][startCol+3] = null;
+					cheeseGrid[i][startCol+4] = null;
+					repaint();
+				} else if (horizCount == 4) {
+					// begone thot
+				} else if (horizCount == 3) {
+					// begone thot
+				} else {
+					// can't move!
+					// switch back, or just call swap in the cases and not here
+					// call to paintComponent to say no can do buckaroo
 				}
 			}
 			for (int i = unoRow; i < unoRow + 1; i++) {
@@ -222,9 +221,11 @@ public class CheeseCrushCanvas extends JComponent {
 		for (int i = 50; i < 501; i += 50) {
 			g.drawLine(500, i, 950, i);
 		}
+		
+		// wine level
 		g.setColor(wine);
-//		g.fillRect(500, 450, 450, 50);
-		g.drawLine(500, 500, 950, 500);
+		g.fillRect(500, wineY, 450, wineHeight);
+//		g.drawLine(500, 500, 950, 500);
 		
 		// score + moves
 		g.setColor(bluerGray);
@@ -273,15 +274,12 @@ public class CheeseCrushCanvas extends JComponent {
 				}
 			}
 		}
-		String rows = "";
-		String cols = "";
-		// supposed to run 9 times, why sometimes only 7 or 8?????????????????????????????????????????
 		for (int k = 0; k < 9; k++) {
 			int row = (int)(Math.random() * 9);
 			int col = (int)(Math.random() * 9);
-			if (rows.indexOf(row) == -1 && cols.indexOf(col) == -1) {
-				rows += row;
-				cols += col;
+			if (grid[row][col].getStatus().equals("bottle")) {
+				k--;
+			} else {
 				String color = grid[row][col].getColor();
 				if (color.equals("red")) {
 					grid[row][col] = new Red("bottle");
@@ -298,15 +296,6 @@ public class CheeseCrushCanvas extends JComponent {
 				}
 			}
 		}
-		int bottleCount = 0;
-		for (Cheese[] row : grid) {
-			for (Cheese chz : row) {
-				if (chz.getStatus().equals("bottle")) {
-					bottleCount++;
-				}
-			}
-		}
-		System.out.println(bottleCount);
 		// subsequent fillings
 //		for (int i = 1; i < grid.length - 1; i++) {
 //			for (int j = 1; j < grid[0].length - 1; j++) {
