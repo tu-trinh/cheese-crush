@@ -3,9 +3,11 @@ import javax.swing.*;
 
 public class Blue extends Cheese {
 	private Image img;
+	private String color;
 	
 	public Blue(String status) {
 		super(status);
+		color = "blue";
 		if (status.equals("normal")) {
 			img = new ImageIcon("blueGorgonzola.png").getImage();
 		} else if (status.equals("bomb")) {
@@ -21,5 +23,9 @@ public class Blue extends Cheese {
 	
 	public Image getImg() {
 		return img;
+	}
+	
+	public String getColor() {
+		return color;
 	}
 }
