@@ -12,10 +12,14 @@ import javax.swing.*;
 
 // place bottles in correct locations
 // place locks in correct locations
-// combinations code
+// combinations code: all number matches, double matches, cannot move mouse randomly
+// VERT STRIPES HOE
 // score code
-// reset
-// shuffle
+// ending frenzy
+// moves code CHECK
+// reset CHECK
+// shuffle (probs just reset :( )
+// game over options
 // animate
 // music
 // sparkles :P
@@ -50,7 +54,8 @@ public class CheeseCrushRunner {
 				canvas.checkPress(e.getX(), e.getY());
 			}
 
-			public void mouseReleased(MouseEvent e) {				
+			public void mouseReleased(MouseEvent e) {	
+				canvas.checkRelease(e.getX(), e.getY());
 			}
 			
 			public void mouseEntered(MouseEvent e) {
