@@ -1,3 +1,4 @@
+
 // six cheeses: red leicester, orange cheddar, yellow camembert, green cherni vit, blue gorgonzola, purple ricotta
 // normal combo 60 pt
 // striped 120 pt
@@ -31,9 +32,11 @@ public class CheeseCrushCanvas extends JComponent {
 	private int clickCol;
 	private int releaseRow;
 	private int releaseCol;
+	private ArrayList<Integer> matchRows;
+	private ArrayList<Integer> matchCols;
 	private int wineHeight;
 	private int wineY;
-	
+
 	public CheeseCrushCanvas(int width, int height) {
 		WIDTH = width;
 		HEIGHT = height;
@@ -52,15 +55,17 @@ public class CheeseCrushCanvas extends JComponent {
 		clickCol = 0;
 		releaseRow = 0;
 		releaseCol = 0;
+		matchRows = new ArrayList<Integer>();
+		matchCols = new ArrayList<Integer>();
 		wineHeight = 4; // +50 if bottle
 		wineY = 498; // -50 if bottle
 	}
-	
+
 	public void checkPress(int x, int y) {
 		if (game) {
 			if (x >= 500 && x <= 950 && y >= 50 && y <= 500) {
-				clickRow = (y-50)/50;
-				clickCol = (x-500)/50;
+				clickRow = (y - 50) / 50;
+				clickCol = (x - 500) / 50;
 //				one = cheeseGrid[clickRow][clickCol];
 				System.out.println("X: " + x + "\nY: " + y);
 				System.out.println("Row: " + clickRow + "\nCol: " + clickCol);
@@ -69,147 +74,152 @@ public class CheeseCrushCanvas extends JComponent {
 		}
 		return;
 	}
-	
+
 	public void checkRelease(int x, int y) {
 		if (game) {
 			if (x >= 500 && x <= 950 && y >= 50 && y <= 500) {
-				releaseRow = (y-50)/50;
-				releaseCol = (x-500)/50;
+				releaseRow = (y - 50) / 50;
+				releaseCol = (x - 500) / 50;
 //				two = cheeseGrid[releaseRow][releaseCol];
 				System.out.println("X: " + x + "\nY: " + y);
 				System.out.println("Row: " + releaseRow + "\nCol: " + releaseCol);
 //				System.out.println(two);
-				swap(clickRow, clickCol, releaseRow, releaseCol);
+				testSwap(clickRow, clickCol, releaseRow, releaseCol);
+				count(clickRow, clickCol, releaseRow, releaseCol);
+//				swap(clickRow, clickCol, releaseRow, releaseCol);
 			}
 		}
 		return;
 	}
-	
+
+	private void testSwap(int unoRow, int unoCol, int dosRow, int dosCol) {
+		if (moves == 0) {
+			game = false;
+		}
+		if (game && (((unoRow == dosRow + 1 || unoRow == dosRow - 1) && unoCol == dosCol)
+				|| ((unoCol == dosCol + 1 || unoCol == dosCol - 1)) && unoRow == dosRow)) {
+//			if ((cheeseGrid[unoRow][unoCol].equals(cheeseGrid[unoRow][unoCol-1]) && cheeseGrid[unoRow][unoCol].equals(cheeseGrid[unoRow][unoCol+1])) || (cheeseGrid[dosRow][dosCol].equals(cheeseGrid[dosRow][dosCol-1]) && cheeseGrid[dosRow][dosCol].equals(cheeseGrid[dosRow][dosCol+1]))) {
+//				if ((cheeseGrid[unoRow][unoCol].equals(cheeseGrid[unoRow-1][unoCol]) && cheeseGrid[unoRow][unoCol].equals(cheeseGrid[unoRow+1][unoCol])) || (cheeseGrid[dosRow][dosCol].equals(cheeseGrid[dosRow-1][dosCol]) && cheeseGrid[dosRow][dosCol].equals(cheeseGrid[dosRow+1][dosCol]))) {
+			swap(unoRow, unoCol, dosRow, dosCol);
+//				}
+//			}
+		}
+	}
+
 	private void swap(int unoRow, int unoCol, int dosRow, int dosCol) {
-		if (game && (unoRow == dosRow+1 || unoRow == dosRow-1 || unoCol == dosCol+1 || unoCol == dosCol-1)) {
-			Cheese temp = cheeseGrid[unoRow][unoCol];
-			System.out.println("Uno 1: " + cheeseGrid[unoRow][unoCol]);
-			cheeseGrid[unoRow][unoCol] = cheeseGrid[dosRow][dosCol];
-			System.out.println("Uno 2: " + cheeseGrid[unoRow][unoCol]);
-			System.out.println("Dos 1: " + cheeseGrid[dosRow][dosCol]);
-			cheeseGrid[dosRow][dosCol] = temp;
-			System.out.println("Dos 2: " + cheeseGrid[dosRow][dosCol]);
-			
-			// next two lines: only if legit match
-			moves--;
-			repaint();
-						
-			// horizontal matches
-			int horizCount = 0;
-			int startCol = 0;
-			for (int i = dosRow; i < dosRow + 1; i++) {
-				Cheese cur = cheeseGrid[dosRow][startCol];
-				for (int j = 0; j < cheeseGrid[0].length; j++) {
-					if (cheeseGrid[i][j].equals(cur)) {
-						horizCount++;
-					} else {
-						cur = cheeseGrid[i][j];
-						startCol = j;
-						horizCount = 1;
-					}
-				}
-				if (horizCount == 5) {
-					cheeseGrid[i][startCol] = new Purple("bomb");
-					cheeseGrid[i][startCol+1] = null;
-					cheeseGrid[i][startCol+2] = null;
-					cheeseGrid[i][startCol+3] = null;
-					cheeseGrid[i][startCol+4] = null;
-					repaint();
-				} else if (horizCount == 4) {
-					// begone thot
-				} else if (horizCount == 3) {
-					// begone thot
-				} else {
-					// can't move!
-					// switch back, or just call swap in the cases and not here
-					// call to paintComponent to say no can do buckaroo
-				}
-			}
-			for (int i = unoRow; i < unoRow + 1; i++) {
-				Cheese cur = cheeseGrid[unoRow][0];
-				for (int j = 0; j < cheeseGrid[0].length; j++) {
-					if (cheeseGrid[i][j].equals(cur)) {
-						horizCount++;
-					} else {
-						cur = cheeseGrid[i][j];
-						startCol = j;
-						horizCount = 0;
-					}
-				}
-				if (horizCount == 5) {
-					// begone thot
-				} else if (horizCount == 4) {
-					// begone thot
-				} else if (horizCount == 3) {
-					// begone thot
-				} else {
-					// can't move!
-				}
-			}
-			// vertical matches
-			int vertCount = 0;
-			for (int i = dosCol; i < dosCol + 1; i++) {
-				Cheese cur = cheeseGrid[0][dosCol];
-				for (int j = 0; j < cheeseGrid.length; j++) {
-					if (cheeseGrid[i][j].equals(cur)) {
-						vertCount++;
-					} else {
-						cur = cheeseGrid[i][j];
-						vertCount = 0;
-					}
-				}
-				if (vertCount == 5) {
-					// begone thot
-				} else if (vertCount == 4) {
-					// begone thot
-				} else if (vertCount == 3) {
-					// begone thot
-				} else {
-					// can't move!
-				}
-			}
-			for (int i = unoCol; i < unoCol + 1; i++) {
-				Cheese cur = cheeseGrid[0][unoCol];
-				for (int j = 0; j < cheeseGrid.length; j++) {
-					if (cheeseGrid[i][j].equals(cur)) {
-						vertCount++;
-					} else {
-						cur = cheeseGrid[i][j];
-						vertCount = 0;
-					}
-				}
-				if (vertCount == 5) {
-					// begone thot
-				} else if (vertCount == 4) {
-					// begone thot
-				} else if (vertCount == 3) {
-					// begone thot
-				} else {
-					// can't move!
-				}
-			}
-			if (moves == 0) {
-				game = false;
-			}
-		}
-		return;
+		Cheese temp = cheeseGrid[unoRow][unoCol];
+		System.out.println("Uno 1: " + cheeseGrid[unoRow][unoCol]);
+		cheeseGrid[unoRow][unoCol] = cheeseGrid[dosRow][dosCol];
+		System.out.println("Uno 2: " + cheeseGrid[unoRow][unoCol]);
+		System.out.println("Dos 1: " + cheeseGrid[dosRow][dosCol]);
+		cheeseGrid[dosRow][dosCol] = temp;
+		System.out.println("Dos 2: " + cheeseGrid[dosRow][dosCol]);
+
+		moves--;
+		repaint();
 	}
-	
+
 	public void reset() {
 		score = 0;
 		moves = 60;
 		fillGrid(cheeseGrid);
 		repaint();
 	}
-	
-	public void paintComponent(Graphics gr) {
-		Graphics2D g = (Graphics2D)gr;
+
+	private void count(int unoRow, int unoCol, int dosRow, int dosCol) {
+		unoRow = (Integer) unoRow != null ? unoRow : 0;
+		unoCol = (Integer) unoCol != null ? unoCol : 0;
+		dosRow = (Integer) dosRow != null ? dosRow : 0;
+		dosCol = (Integer) dosCol != null ? dosCol : 0;
+		int horizCount = 0;
+		int vertCount = 0;
+		Cheese startCheese;
+		matchRows.clear();
+		matchCols.clear();
+
+		// clickRow
+		horizCount = 0;
+		startCheese = cheeseGrid[unoRow][0];
+		System.out.println("Starting cheese: " + startCheese);
+		for (int j = 0; j < cheeseGrid[0].length; j++) {
+			if (cheeseGrid[unoRow][j].equals(startCheese)) {
+				horizCount++;
+				System.out.println("Horiz Count: " + horizCount);
+				if (horizCount >= 3) {
+					if (matchRows.indexOf(unoRow) == -1)
+						matchRows.add(unoRow);
+				}
+			} else {
+				horizCount = 1;
+				startCheese = cheeseGrid[unoRow][j];
+				System.out.println("Start Cheese: " + startCheese);
+			}
+		}
 		
+		// releaseRow
+		horizCount = 0;
+		startCheese = cheeseGrid[dosRow][0];
+		System.out.println("Starting cheese: " + startCheese);
+		for (int j = 0; j < cheeseGrid[0].length; j++) {
+			if (cheeseGrid[dosRow][j].equals(startCheese)) {
+				horizCount++;
+				System.out.println("Horiz Count: " + horizCount);
+				if (horizCount >= 3) {
+					if (matchRows.indexOf(dosRow) == -1)
+						matchRows.add(dosRow);
+				}
+			} else {
+				horizCount = 1;
+				startCheese = cheeseGrid[dosRow][j];
+				System.out.println("Start Cheese: " + startCheese);
+			}
+		}
+		System.out.println("Rows with matches: " + matchRows);
+		
+		// clickCol
+		vertCount = 0;
+		startCheese = cheeseGrid[0][unoCol];
+		System.out.println("Starting cheese: " + startCheese);
+		for (int i = 0; i < cheeseGrid.length; i++) {
+			if (cheeseGrid[i][unoCol].equals(startCheese)) {
+				vertCount++;
+				System.out.println("Vert Count: " + vertCount);
+				if (vertCount >= 3) {
+					if (matchCols.indexOf(unoCol) == -1)
+						matchCols.add(unoCol);
+				}
+			} else {
+				vertCount = 1;
+				startCheese = cheeseGrid[i][unoCol];
+				System.out.println("Start Cheese: " + startCheese);
+			}
+		}
+		
+		// releaseCol
+		vertCount = 0;
+		startCheese = cheeseGrid[0][dosCol];
+		System.out.println("Starting cheese: " + startCheese);
+		for (int i = 0; i < cheeseGrid.length; i++) {
+			if (cheeseGrid[i][dosCol].equals(startCheese)) {
+				vertCount++;
+				System.out.println("Vert Count: " + vertCount);
+				if (vertCount >= 3) {
+					if (matchRows.indexOf(dosCol) == -1)
+						matchCols.add(dosCol);
+				}
+			} else {
+				vertCount = 1;
+				startCheese = cheeseGrid[i][dosCol];
+				System.out.println("Start Cheese: " + startCheese);
+			}
+		}
+		
+		System.out.println("Columns with matches: " + matchCols);
+	}
+
+	public void paintComponent(Graphics gr) {
+		Graphics2D g = (Graphics2D) gr;
+
 		// background
 		g.setColor(grayerBlue);
 		g.fillRect(500, 50, 450, 450);
@@ -221,24 +231,24 @@ public class CheeseCrushCanvas extends JComponent {
 		for (int i = 50; i < 501; i += 50) {
 			g.drawLine(500, i, 950, i);
 		}
-		
+
 		// wine level
 		g.setColor(wine);
 		g.fillRect(500, wineY, 450, wineHeight);
 //		g.drawLine(500, 500, 950, 500);
-		
+
 		// score + moves
 		g.setColor(bluerGray);
 		g.setFont(new Font("Dialog", Font.BOLD, 30));
 		g.drawString("Score: " + score, 250, 270);
 		g.drawString("Moves: " + moves, 250, 305);
-		
+
 		// title + instructions
 		g.setColor(Color.BLACK);
 		g.setFont(new Font("Times New Roman", Font.BOLD | Font.ITALIC, 50));
 		g.drawString("Cheese Crush!!!", 550, 555);
 		g.drawString("Pop the wine bottles!", 505, 610);
-		
+
 		// cheese grid
 		int x = 500;
 		int y = 50;
@@ -251,7 +261,7 @@ public class CheeseCrushCanvas extends JComponent {
 			y += 50;
 		}
 	}
-	
+
 	// fill grid with cheeses
 	private void fillGrid(Cheese[][] grid) {
 		// initial filling of grid
@@ -262,21 +272,21 @@ public class CheeseCrushCanvas extends JComponent {
 		}
 		for (int i = 0; i < grid.length; i++) {
 			for (int j = 1; j < grid[0].length - 1; j++) {
-				while (grid[i][j].equals(grid[i][j-1]) && grid[i][j].equals(grid[i][j+1])) {
+				while (grid[i][j].equals(grid[i][j - 1]) && grid[i][j].equals(grid[i][j + 1])) {
 					grid[i][j] = chooseRandom();
 				}
 			}
 		}
 		for (int i = 1; i < grid.length - 1; i++) {
 			for (int j = 0; j < grid[0].length; j++) {
-				while (grid[i][j].equals(grid[i-1][j]) && grid[i][j].equals(grid[i+1][j])) {
+				while (grid[i][j].equals(grid[i - 1][j]) && grid[i][j].equals(grid[i + 1][j])) {
 					grid[i][j] = chooseRandom();
 				}
 			}
 		}
 		for (int k = 0; k < 9; k++) {
-			int row = (int)(Math.random() * 9);
-			int col = (int)(Math.random() * 9);
+			int row = (int) (Math.random() * 9);
+			int col = (int) (Math.random() * 9);
 			if (grid[row][col].getStatus().equals("bottle")) {
 				k--;
 			} else {
@@ -311,10 +321,10 @@ public class CheeseCrushCanvas extends JComponent {
 //			}
 //		}
 	}
-	
+
 	// choose a random cheese to put in grid
 	private Cheese chooseRandom() {
-		int choice = (int)(Math.random() * 12) + 1;
+		int choice = (int) (Math.random() * 12) + 1;
 		if (choice == 1 || choice == 2) {
 			return new Red("normal");
 		} else if (choice == 3 || choice == 4) {
