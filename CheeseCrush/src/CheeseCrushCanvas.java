@@ -1,4 +1,3 @@
-
 // six cheeses: red leicester, orange cheddar, yellow camembert, green cherni vit, blue gorgonzola, purple ricotta
 // normal combo 60 pt
 // striped 120 pt
@@ -98,13 +97,11 @@ public class CheeseCrushCanvas extends JComponent {
 		}
 		if (game && (((unoRow == dosRow + 1 || unoRow == dosRow - 1) && unoCol == dosCol)
 				|| ((unoCol == dosCol + 1 || unoCol == dosCol - 1)) && unoRow == dosRow)) {
-//			if ((cheeseGrid[unoRow][unoCol].equals(cheeseGrid[unoRow][unoCol-1]) && cheeseGrid[unoRow][unoCol].equals(cheeseGrid[unoRow][unoCol+1])) || (cheeseGrid[dosRow][dosCol].equals(cheeseGrid[dosRow][dosCol-1]) && cheeseGrid[dosRow][dosCol].equals(cheeseGrid[dosRow][dosCol+1]))) {
-//				if ((cheeseGrid[unoRow][unoCol].equals(cheeseGrid[unoRow-1][unoCol]) && cheeseGrid[unoRow][unoCol].equals(cheeseGrid[unoRow+1][unoCol])) || (cheeseGrid[dosRow][dosCol].equals(cheeseGrid[dosRow-1][dosCol]) && cheeseGrid[dosRow][dosCol].equals(cheeseGrid[dosRow+1][dosCol]))) {
+			// test for valid move :((((((((((((((
 			swap(unoRow, unoCol, dosRow, dosCol);
-//				}
-//			}
 		}
 	}
+	// if ((cheeseGrid[unoRow][unoCol].equals(cheeseGrid[unoRow][unoCol-1]) && cheeseGrid[unoRow][unoCol].equals(cheeseGrid[unoRow][unoCol+1])) || (cheeseGrid[unoRow][unoCol].equals(cheeseGrid[unoRow-1][unoCol]) && cheeseGrid[unoRow][unoCol].equals(cheeseGrid[unoRow+1][unoCol])) || (cheeseGrid[dosRow][dosCol].equals(cheeseGrid[dosRow][dosCol-1]) && cheeseGrid[dosRow][dosCol].equals(cheeseGrid[dosRow][dosCol+1]) && (cheeseGrid[dosRow][dosCol].equals(cheeseGrid[dosRow-1][dosCol]) && cheeseGrid[dosRow][dosCol].equals(cheeseGrid[dosRow+1][dosCol]))))
 
 	private void swap(int unoRow, int unoCol, int dosRow, int dosCol) {
 		Cheese temp = cheeseGrid[unoRow][unoCol];
@@ -114,7 +111,7 @@ public class CheeseCrushCanvas extends JComponent {
 		System.out.println("Dos 1: " + cheeseGrid[dosRow][dosCol]);
 		cheeseGrid[dosRow][dosCol] = temp;
 		System.out.println("Dos 2: " + cheeseGrid[dosRow][dosCol]);
-
+		
 		moves--;
 		repaint();
 	}
@@ -127,44 +124,52 @@ public class CheeseCrushCanvas extends JComponent {
 	}
 
 	private void count(int unoRow, int unoCol, int dosRow, int dosCol) {
-		unoRow = (Integer) unoRow != null ? unoRow : 0;
-		unoCol = (Integer) unoCol != null ? unoCol : 0;
-		dosRow = (Integer) dosRow != null ? dosRow : 0;
-		dosCol = (Integer) dosCol != null ? dosCol : 0;
+		unoRow = (Integer)unoRow != null ? unoRow : 0;
+		unoCol = (Integer)unoCol != null ? unoCol : 0;
+		dosRow = (Integer)dosRow != null ? dosRow : 0;
+		dosCol = (Integer)dosCol != null ? dosCol : 0;
 		int horizCount = 0;
 		int vertCount = 0;
 		Cheese startCheese;
+		int startCol;
+		int startRow;
 		matchRows.clear();
 		matchCols.clear();
 
 		// clickRow
 		horizCount = 0;
 		startCheese = cheeseGrid[unoRow][0];
+		startCol = 0;
 		System.out.println("Starting cheese: " + startCheese);
 		for (int j = 0; j < cheeseGrid[0].length; j++) {
 			if (cheeseGrid[unoRow][j].equals(startCheese)) {
 				horizCount++;
 				System.out.println("Horiz Count: " + horizCount);
 				if (horizCount >= 3) {
-					if (matchRows.indexOf(unoRow) == -1)
+					startCol = j - (horizCount - 1);
+					if (matchRows.indexOf(unoRow) == -1) {
 						matchRows.add(unoRow);
+					}
 				}
 			} else {
 				horizCount = 1;
 				startCheese = cheeseGrid[unoRow][j];
 				System.out.println("Start Cheese: " + startCheese);
 			}
+			System.out.println("Start Col: " + startCol);
 		}
 		
 		// releaseRow
 		horizCount = 0;
 		startCheese = cheeseGrid[dosRow][0];
+		startCol = 0;
 		System.out.println("Starting cheese: " + startCheese);
 		for (int j = 0; j < cheeseGrid[0].length; j++) {
 			if (cheeseGrid[dosRow][j].equals(startCheese)) {
 				horizCount++;
 				System.out.println("Horiz Count: " + horizCount);
 				if (horizCount >= 3) {
+					startCol = j - (horizCount - 1);
 					if (matchRows.indexOf(dosRow) == -1)
 						matchRows.add(dosRow);
 				}
@@ -173,18 +178,21 @@ public class CheeseCrushCanvas extends JComponent {
 				startCheese = cheeseGrid[dosRow][j];
 				System.out.println("Start Cheese: " + startCheese);
 			}
+			System.out.println("Start Col: " + startCol);
 		}
 		System.out.println("Rows with matches: " + matchRows);
 		
 		// clickCol
 		vertCount = 0;
 		startCheese = cheeseGrid[0][unoCol];
+		startRow = 0;
 		System.out.println("Starting cheese: " + startCheese);
 		for (int i = 0; i < cheeseGrid.length; i++) {
 			if (cheeseGrid[i][unoCol].equals(startCheese)) {
 				vertCount++;
 				System.out.println("Vert Count: " + vertCount);
 				if (vertCount >= 3) {
+					startCol = i - (vertCount - 1);
 					if (matchCols.indexOf(unoCol) == -1)
 						matchCols.add(unoCol);
 				}
@@ -198,12 +206,14 @@ public class CheeseCrushCanvas extends JComponent {
 		// releaseCol
 		vertCount = 0;
 		startCheese = cheeseGrid[0][dosCol];
+		startRow = 0;
 		System.out.println("Starting cheese: " + startCheese);
 		for (int i = 0; i < cheeseGrid.length; i++) {
 			if (cheeseGrid[i][dosCol].equals(startCheese)) {
 				vertCount++;
 				System.out.println("Vert Count: " + vertCount);
 				if (vertCount >= 3) {
+					startCol = i - (vertCount - 1);
 					if (matchRows.indexOf(dosCol) == -1)
 						matchCols.add(dosCol);
 				}
@@ -213,6 +223,13 @@ public class CheeseCrushCanvas extends JComponent {
 				System.out.println("Start Cheese: " + startCheese);
 			}
 		}
+		
+		for (int row : matchRows) {
+			for (int k = 0; k < horizCount; k++) {
+				cheeseGrid[row][startCol+k] = new Purple("bomb");
+			}
+		}
+		repaint();
 		
 		System.out.println("Columns with matches: " + matchCols);
 	}
