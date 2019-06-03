@@ -2,7 +2,7 @@ import java.awt.Image;
 
 import javax.swing.ImageIcon;
 
-public abstract class Cheese {
+public class Cheese {
 	private String status;
 	private Image img;
 	private String color;
@@ -10,7 +10,7 @@ public abstract class Cheese {
 	public Cheese(String status) {
 		this.status = status;
 		img = new ImageIcon("colorBomb.png").getImage();
-		color = "none";
+		color = "bomb";
 	}
 	
 	public Image getImg() {
