@@ -14,8 +14,10 @@ public class Green extends Cheese {
 			img = new ImageIcon("greenBomb.png").getImage();
 		} else if (status.equals("bottle")) {
 			img = new ImageIcon("greenBottle.png").getImage();
-		} else if (status.equals("striped")) {
-			img = new ImageIcon("greenStriped.png").getImage();
+		} else if (status.equals("horizontal")) {
+			img = new ImageIcon("greenHorizStriped.png").getImage();
+		} else if (status.equals("vertical")) {
+			img = new ImageIcon("greenVertStriped.png").getImage();
 		} else if (status.equals("wrapped")) {
 			img = new ImageIcon("greenWrapped.png").getImage();
 		}
