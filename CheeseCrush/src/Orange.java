@@ -14,8 +14,10 @@ public class Orange extends Cheese {
 			img = new ImageIcon("orangeBomb.png").getImage();
 		} else if (status.equals("bottle")) {
 			img = new ImageIcon("orangeBottle.png").getImage();
-		} else if (status.equals("striped")) {
-			img = new ImageIcon("orangeStriped.png").getImage();
+		} else if (status.equals("horizontal")) {
+			img = new ImageIcon("orangeHorizStriped.png").getImage();
+		} else if (status.equals("vertical")) {
+			img = new ImageIcon("orangeVertStriped.png").getImage();
 		} else if (status.equals("wrapped")) {
 			img = new ImageIcon("orangeWrapped.png").getImage();
 		}
