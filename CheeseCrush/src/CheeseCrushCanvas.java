@@ -17,8 +17,6 @@
 // ACTIVATE WRAPPED
 // ACTIVATE BOMBS
 // IMPLEMENT REPEATED CLEARBOARDSSSSSSS
-// IMPLEMENT SCORING
-// ADD YOUR SCORE IS TO WIN
 // IF TIME, SHUFFLE
 
 import java.awt.*;
@@ -83,8 +81,6 @@ public class CheeseCrushCanvas extends JComponent {
 				clickRow = (y - 50) / 50;
 				clickCol = (x - 500) / 50;
 //				one = cheeseGrid[clickRow][clickCol];
-				System.out.println("X: " + x + "\nY: " + y);
-				System.out.println("Row: " + clickRow + "\nCol: " + clickCol);
 //				System.out.println(one);
 			}
 		}
@@ -102,6 +98,13 @@ public class CheeseCrushCanvas extends JComponent {
 //				System.out.println(two);
 				testSwap(clickRow, clickCol, releaseRow, releaseCol);
 				count(clickRow, clickCol, releaseRow, releaseCol);
+				clearBoard();
+				// WHAATTTT the HecQ
+//				count();
+//				while (matchRows.size() != 0 || matchCols.size() != 0) {
+//					clearBoard();
+//					count();
+//				}
 //				swap(clickRow, clickCol, releaseRow, releaseCol);
 			}
 		}
@@ -122,26 +125,10 @@ public class CheeseCrushCanvas extends JComponent {
 
 	private void swap(int unoRow, int unoCol, int dosRow, int dosCol) {
 		Cheese temp = cheeseGrid[unoRow][unoCol];
-		System.out.println("Uno 1: " + cheeseGrid[unoRow][unoCol]);
 		cheeseGrid[unoRow][unoCol] = cheeseGrid[dosRow][dosCol];
-		System.out.println("Uno 2: " + cheeseGrid[unoRow][unoCol]);
-		System.out.println("Dos 1: " + cheeseGrid[dosRow][dosCol]);
 		cheeseGrid[dosRow][dosCol] = temp;
-		System.out.println("Dos 2: " + cheeseGrid[dosRow][dosCol]);
 		
 		moves--;
-		repaint();
-	}
-
-	public void reset() {
-		score = 0;
-		moves = 60;
-		winWidth = 0;
-		winHeight = 0;
-		winMsg = "";
-		wineY = 498;
-		wineHeight = 4;
-		fillGrid(cheeseGrid);
 		repaint();
 	}
 
@@ -162,16 +149,34 @@ public class CheeseCrushCanvas extends JComponent {
 		horizCount = 0;
 		startCheese = cheeseGrid[unoRow][0];
 		startCol = 0;
+		int special = 0;
+		int specRow = 0;
+		int specCol = 0;
 		String matchPair = "";
-		System.out.println("Starting cheese: " + startCheese);
 		for (int j = 0; j < cheeseGrid[0].length; j++) {
 			if (cheeseGrid[unoRow][j].equals(startCheese)) {
 				horizCount++;
-				System.out.println("Horiz Count: " + horizCount);
+				if (cheeseGrid[unoRow][j].getStatus().equals("wrapped")) {
+					special = 1;
+					specRow = unoRow;
+					specCol = j;
+				} else if (cheeseGrid[unoRow][j].getStatus().equals("horizontal")) {
+					special = 2;
+					specRow = unoRow;
+					specCol = j;
+				} else if (cheeseGrid[unoRow][j].getStatus().equals("vertical")) {
+					special = 3;
+					specRow = unoRow;
+					specCol = j;
+				} else if (cheeseGrid[unoRow][j].getStatus().equals("bomb")) {
+					special = 4;
+					specRow = unoRow;
+					specCol = j;
+				}
 				if (j < cheeseGrid[0].length - 1) {
 					if (horizCount >= 3 && !cheeseGrid[unoRow][j+1].equals(cheeseGrid[unoRow][j])) {
 						startCol = j - (horizCount - 1);
-						matchPair = "" + unoRow + startCol + horizCount;
+						matchPair = "" + unoRow + startCol + horizCount + special + specRow + specCol;
 						if (matchRows.indexOf(matchPair) == -1) {
 							matchRows.add(matchPair);
 						}
@@ -179,7 +184,7 @@ public class CheeseCrushCanvas extends JComponent {
 				} else if (j == cheeseGrid[0].length - 1) {
 					if (horizCount >= 3) {
 						startCol = j - (horizCount - 1);
-						matchPair = "" + unoRow + startCol + horizCount;
+						matchPair = "" + unoRow + startCol + horizCount + special + specRow + specCol;
 						if (matchRows.indexOf(matchPair) == -1) {
 							matchRows.add(matchPair);
 						}
@@ -188,9 +193,7 @@ public class CheeseCrushCanvas extends JComponent {
 			} else {
 				horizCount = 1;
 				startCheese = cheeseGrid[unoRow][j];
-				System.out.println("Start Cheese: " + startCheese);
 			}
-			System.out.println("Match Pair: " + matchPair);
 		}
 		
 		// releaseRow
@@ -198,83 +201,161 @@ public class CheeseCrushCanvas extends JComponent {
 		startCheese = cheeseGrid[dosRow][0];
 		startCol = 0;
 		matchPair = "";
-		System.out.println("Starting cheese: " + startCheese);
+		special = 0;
+		specRow = 0;
+		specCol = 0;
 		for (int j = 0; j < cheeseGrid[0].length; j++) {
 			if (cheeseGrid[dosRow][j].equals(startCheese)) {
 				horizCount++;
-				System.out.println("Horiz Count: " + horizCount);
-				if (horizCount >= 3) {
-					startCol = j - (horizCount - 1);
-					matchPair = "" + dosRow + startCol + horizCount;
-					if (matchRows.indexOf(matchPair) == -1)
-						matchRows.add(matchPair);
+				if (cheeseGrid[dosRow][j].getStatus().equals("wrapped")) {
+					special = 1;
+					specRow = dosRow;
+					specCol = j;
+				} else if (cheeseGrid[dosRow][j].getStatus().equals("horizontal")) {
+					special = 2;
+					specRow = dosRow;
+					specCol = j;
+				} else if (cheeseGrid[dosRow][j].getStatus().equals("vertical")) {
+					special = 3;
+					specRow = dosRow;
+					specCol = j;
+				} else if (cheeseGrid[dosRow][j].getStatus().equals("bomb")) {
+					special = 4;
+					specRow = dosRow;
+					specCol = j;
+				}
+				if (j < cheeseGrid[0].length - 1) {
+					if (horizCount >= 3 && !cheeseGrid[dosRow][j+1].equals(cheeseGrid[dosRow][j])) {
+						startCol = j - (horizCount - 1);
+						matchPair = "" + dosRow + startCol + horizCount + special + specRow + specCol;
+						if (matchRows.indexOf(matchPair) == -1) {
+							matchRows.add(matchPair);
+						}
+					}
+				} else if (j == cheeseGrid[0].length - 1) {
+					if (horizCount >= 3) {
+						startCol = j - (horizCount - 1);
+						matchPair = "" + dosRow + startCol + horizCount + special + specRow + specCol;
+						if (matchRows.indexOf(matchPair) == -1) {
+							matchRows.add(matchPair);
+						}
+					}
 				}
 			} else {
 				horizCount = 1;
 				startCheese = cheeseGrid[dosRow][j];
-				System.out.println("Start Cheese: " + startCheese);
 			}
-			System.out.println("Match pair: " + matchPair);
 		}
 		System.out.println("Rows with matches: " + matchRows);
 		
 		// clickCol
 		vertCount = 0;
-		startCheese = cheeseGrid[unoCol][0];
+		startCheese = cheeseGrid[0][unoCol];
+		System.out.println("Starting cheese: " + startCheese);
 		startRow = 0;
 		matchPair = "";
-		System.out.println("Starting cheese: " + startCheese);
+		special = 0;
+		specRow = 0;
+		specCol = 0;
 		for (int i = 0; i < cheeseGrid.length; i++) {
 			if (cheeseGrid[i][unoCol].equals(startCheese)) {
 				vertCount++;
-				System.out.println("Vert Count: " + vertCount);
-				if (vertCount >= 3) {
-					startRow = i - (vertCount - 1);
-					matchPair = "" + unoCol + startRow + vertCount;
-					if (matchCols.indexOf(matchPair) == -1)
-						matchCols.add(matchPair);
+				System.out.println(vertCount);
+				if (cheeseGrid[i][unoCol].getStatus().equals("wrapped")) {
+					special = 1;
+					specRow = i;
+					specCol = unoCol;
+				} else if (cheeseGrid[i][unoCol].getStatus().equals("horizontal")) {
+					special = 2;
+					specRow = i;
+					specCol = unoCol;
+				} else if (cheeseGrid[i][unoCol].getStatus().equals("vertical")) {
+					special = 3;
+					specRow = i;
+					specCol = unoCol;
+				} else if (cheeseGrid[i][unoCol].getStatus().equals("bomb")) {
+					special = 4;
+					specRow = i;
+					specCol = unoCol;
+				}
+				if (i < cheeseGrid.length - 1) {
+					if (vertCount >= 3 && !cheeseGrid[i+1][unoCol].equals(cheeseGrid[i][unoCol])) {
+						startRow = i - (vertCount - 1);
+						matchPair = "" + unoCol + startRow + vertCount + special + specRow + specCol;
+						if (matchCols.indexOf(matchPair) == -1) {
+							matchCols.add(matchPair);
+						}
+					}
+				} else if (i == cheeseGrid.length - 1) {
+					if (vertCount >= 3) {
+						startRow = i - (vertCount - 1);
+						matchPair = "" + unoCol + startRow + vertCount + special + specRow + specCol;
+						if (matchCols.indexOf(matchPair) == -1) {
+							matchCols.add(matchPair);
+						}
+					}
 				}
 			} else {
 				vertCount = 1;
 				startCheese = cheeseGrid[i][unoCol];
-				System.out.println("Start Cheese: " + startCheese);
+				System.out.println("Start cheese: " + startCheese);
 			}
-			System.out.println("Match pair: " + matchPair);
 		}
-		System.out.println("Columns with matches: " + matchCols);
 		
 		// releaseCol
 		vertCount = 0;
-		startCheese = cheeseGrid[dosCol][0];
+		startCheese = cheeseGrid[0][dosCol];
+		System.out.println("Starting cheese: " + startCheese);
 		startRow = 0;
 		matchPair = "";
-		System.out.println("Starting cheese: " + startCheese);
+		special = 0;
+		specRow = 0;
+		specCol = 0;
 		for (int i = 0; i < cheeseGrid.length; i++) {
 			if (cheeseGrid[i][dosCol].equals(startCheese)) {
 				vertCount++;
-				System.out.println("Vert Count: " + vertCount);
-				if (vertCount >= 3) {
-					startRow = i - (vertCount - 1);
-					matchPair = "" + dosCol + startRow + vertCount;
-					if (matchCols.indexOf(matchPair) == -1)
-						matchCols.add(matchPair);
+				System.out.println(vertCount);
+				if (cheeseGrid[i][dosCol].getStatus().equals("wrapped")) {
+					special = 1;
+					specRow = i;
+					specCol = dosCol;
+				} else if (cheeseGrid[i][dosCol].getStatus().equals("horizontal")) {
+					special = 2;
+					specRow = i;
+					specCol = dosCol;
+				} else if (cheeseGrid[i][dosCol].getStatus().equals("vertical")) {
+					special = 3;
+					specRow = i;
+					specCol = dosCol;
+				} else if (cheeseGrid[i][dosCol].getStatus().equals("bomb")) {
+					special = 4;
+					specRow = i;
+					specCol = dosCol;
+				}
+				if (i < cheeseGrid.length - 1) {
+					if (vertCount >= 3 && !cheeseGrid[i+1][dosCol].equals(cheeseGrid[i][dosCol])) {
+						startRow = i - (vertCount - 1);
+						matchPair = "" + dosCol + startRow + vertCount + special + specRow + specCol;
+						if (matchRows.indexOf(matchPair) == -1) {
+							matchRows.add(matchPair);
+						}
+					}
+				} else if (i == cheeseGrid.length - 1) {
+					if (vertCount >= 3) {
+						startRow = i - (vertCount - 1);
+						matchPair = "" + dosCol + startRow + vertCount + special + specRow + specCol;
+						if (matchRows.indexOf(matchPair) == -1) {
+							matchRows.add(matchPair);
+						}
+					}
 				}
 			} else {
 				vertCount = 1;
 				startCheese = cheeseGrid[i][dosCol];
-				System.out.println("Start Cheese: " + startCheese);
+				System.out.println("Start cheese: " + startCheese);
 			}
-			System.out.println("Match pair: " + matchPair);
 		}
 		System.out.println("Columns with matches: " + matchCols);
-		
-		clearBoard();
-		// WHAATTTT the HecQ
-//		count();
-//		while (matchRows.size() != 0 || matchCols.size() != 0) {
-//			clearBoard();
-//			count();
-//		}
 	}
 	
 	// general match finding
@@ -289,7 +370,6 @@ public class CheeseCrushCanvas extends JComponent {
 			for (int j = 0; j < cheeseGrid[0].length; j++) {
 				if (cheeseGrid[i][j].equals(startCheese)) {
 					horizCount++;
-					System.out.println("Horiz Count: " + horizCount);
 					if (j < cheeseGrid[0].length - 1) {
 						if (horizCount >= 3 && !cheeseGrid[i][j+1].equals(cheeseGrid[i][j])) {
 							startCol = j - (horizCount - 1);
@@ -310,7 +390,6 @@ public class CheeseCrushCanvas extends JComponent {
 				} else {
 					horizCount = 1;
 					startCheese = cheeseGrid[i][j];
-					System.out.println("Start Cheese: " + startCheese);
 				}
 			}
 		}
@@ -325,7 +404,6 @@ public class CheeseCrushCanvas extends JComponent {
 			for (int i = 0; i < cheeseGrid.length; i++) {
 				if (cheeseGrid[i][j].equals(startCheese)) {
 					vertCount++;
-					System.out.println("Vert Count: " + vertCount);
 					if (i < cheeseGrid.length - 1) {
 						if (vertCount >= 3 && !cheeseGrid[i+1][j].equals(cheeseGrid[i][j])) {
 							startRow = i - (vertCount - 1);
@@ -346,7 +424,6 @@ public class CheeseCrushCanvas extends JComponent {
 				} else {
 					vertCount = 1;
 					startCheese = cheeseGrid[i][j];
-					System.out.println("Start Cheese: " + startCheese);
 				}
 			}
 		}
@@ -354,23 +431,109 @@ public class CheeseCrushCanvas extends JComponent {
 	
 	private void clearBoard() {		
 		// clear matches and change wine
+		// special cheese activation
+		for (String grp : matchRows) {
+			if (Integer.parseInt(grp.substring(3,4)) != 0) {
+				if (Integer.parseInt(grp.substring(3,4)) == 1) {
+					cheeseGrid[Integer.parseInt(grp.substring(4,5))][Integer.parseInt(grp.substring(5,6))] = new Blank("blank");
+					cheeseGrid[Integer.parseInt(grp.substring(4,5))][Integer.parseInt(grp.substring(5,6)) + 1] = new Blank("blank");
+					cheeseGrid[Integer.parseInt(grp.substring(4,5))][Integer.parseInt(grp.substring(5,6)) - 1] = new Blank("blank");
+					cheeseGrid[Integer.parseInt(grp.substring(4,5)) + 1][Integer.parseInt(grp.substring(5,6))] = new Blank("blank");
+					cheeseGrid[Integer.parseInt(grp.substring(4,5)) - 1][Integer.parseInt(grp.substring(5,6))] = new Blank("blank");
+					cheeseGrid[Integer.parseInt(grp.substring(4,5)) + 1][Integer.parseInt(grp.substring(5,6)) + 1] = new Blank("blank");
+					cheeseGrid[Integer.parseInt(grp.substring(4,5)) + 1][Integer.parseInt(grp.substring(5,6)) - 1] = new Blank("blank");
+					cheeseGrid[Integer.parseInt(grp.substring(4,5)) - 1][Integer.parseInt(grp.substring(5,6)) + 1] = new Blank("blank");
+					cheeseGrid[Integer.parseInt(grp.substring(4,5)) - 1][Integer.parseInt(grp.substring(5,6)) - 1] = new Blank("blank");
+					score += 240;
+				}
+				if (Integer.parseInt(grp.substring(3,4)) == 2) {
+					for (int j = 0; j < cheeseGrid[0].length; j++) {
+						cheeseGrid[Integer.parseInt(grp.substring(4,5))][j] = new Blank("blank");
+					}
+					score += 540;
+				}
+				if (Integer.parseInt(grp.substring(3,4)) == 3) {
+					for (int i = 0; i < cheeseGrid.length; i++) {
+						cheeseGrid[i][Integer.parseInt(grp.substring(5,6))] = new Blank("blank");
+					}
+					score += 540;
+				}
+				if (Integer.parseInt(grp.substring(3,4)) == 4) {
+					String color = cheeseGrid[Integer.parseInt(grp.substring(4,5))][Integer.parseInt(grp.substring(5,6))].getColor();
+					int count = 0;
+					for (int i = 0; i < cheeseGrid.length; i++) {
+						for (int j = 0; j < cheeseGrid[0].length; j++) {
+							if (cheeseGrid[i][j].getColor().equals(color)) {
+								count++;
+								cheeseGrid[i][j] = new Blank("blank");
+							}
+						}
+					}
+					score += count * 60;
+				}
+			}
+		}
+		for (String grp : matchCols) {
+			if (Integer.parseInt(grp.substring(3,4)) != 0) {
+				if (Integer.parseInt(grp.substring(3,4)) == 1) {
+					cheeseGrid[Integer.parseInt(grp.substring(4,5))][Integer.parseInt(grp.substring(5,6))] = new Blank("blank");
+					cheeseGrid[Integer.parseInt(grp.substring(4,5))][Integer.parseInt(grp.substring(5,6)) + 1] = new Blank("blank");
+					cheeseGrid[Integer.parseInt(grp.substring(4,5))][Integer.parseInt(grp.substring(5,6)) - 1] = new Blank("blank");
+					cheeseGrid[Integer.parseInt(grp.substring(4,5)) + 1][Integer.parseInt(grp.substring(5,6))] = new Blank("blank");
+					cheeseGrid[Integer.parseInt(grp.substring(4,5)) - 1][Integer.parseInt(grp.substring(5,6))] = new Blank("blank");
+					cheeseGrid[Integer.parseInt(grp.substring(4,5)) + 1][Integer.parseInt(grp.substring(5,6)) + 1] = new Blank("blank");
+					cheeseGrid[Integer.parseInt(grp.substring(4,5)) + 1][Integer.parseInt(grp.substring(5,6)) - 1] = new Blank("blank");
+					cheeseGrid[Integer.parseInt(grp.substring(4,5)) - 1][Integer.parseInt(grp.substring(5,6)) + 1] = new Blank("blank");
+					cheeseGrid[Integer.parseInt(grp.substring(4,5)) - 1][Integer.parseInt(grp.substring(5,6)) - 1] = new Blank("blank");
+					score += 240;
+				}
+				if (Integer.parseInt(grp.substring(3,4)) == 2) {
+					for (int j = 0; j < cheeseGrid[0].length; j++) {
+						cheeseGrid[Integer.parseInt(grp.substring(4,5))][j] = new Blank("blank");
+					}
+					score += 540;
+				}
+				if (Integer.parseInt(grp.substring(3,4)) == 3) {
+					for (int i = 0; i < cheeseGrid.length; i++) {
+						cheeseGrid[i][Integer.parseInt(grp.substring(5,6))] = new Blank("blank");
+					}
+					score += 540;
+				}
+				if (Integer.parseInt(grp.substring(3,4)) == 4) {
+					String color = cheeseGrid[Integer.parseInt(grp.substring(4,5))][Integer.parseInt(grp.substring(5,6))].getColor();
+					int count = 0;
+					for (int i = 0; i < cheeseGrid.length; i++) {
+						for (int j = 0; j < cheeseGrid[0].length; j++) {
+							if (cheeseGrid[i][j].getColor().equals(color)) {
+								count++;
+								cheeseGrid[i][j] = new Blank("blank");
+							}
+						}
+					}
+					score += count * 60;
+				}
+			}
+		}
+		
 		// wrapped cheeses
 		for (String groo : matchRows) {
 			for (String oop : matchCols) {
-				if (groo.substring(1,2).equals(oop.substring(0,1)) && groo.substring(2,3).equals("3") && oop.substring(2,3).equals("3")) {
+				if ((Integer.parseInt(groo.substring(1,2)) + (Integer.parseInt(groo.substring(2,3)) - 1) >= Integer.parseInt(oop.substring(0,1)) || Integer.parseInt(oop.substring(1,2)) + (Integer.parseInt(oop.substring(2,3)) - 1) >= Integer.parseInt(groo.substring(0,1))) && groo.substring(2,3).equals("3") && oop.substring(2,3).equals("3")) {
 					String color = cheeseGrid[Integer.parseInt(groo.substring(0,1))][Integer.parseInt(oop.substring(0,1))].getColor();
+					System.out.println(color);
+					System.out.println(Integer.parseInt(groo.substring(0,1)) + "," + Integer.parseInt(oop.substring(0,1)));
 					if (color.equals("red")) {
-						cheeseGrid[Integer.parseInt(groo.substring(0,1))][Integer.parseInt(oop.substring(0,1))] = new Red("wrapped");
+						cheeseGrid[releaseRow][releaseCol] = new Red("wrapped");
 					} else if (color.equals("orange")) {
-						cheeseGrid[Integer.parseInt(groo.substring(0,1))][Integer.parseInt(oop.substring(0,1))] = new Orange("wrapped");
+						cheeseGrid[releaseRow][releaseCol] = new Orange("wrapped");
 					} else if (color.equals("yellow")) {
-						cheeseGrid[Integer.parseInt(groo.substring(0,1))][Integer.parseInt(oop.substring(0,1))] = new Yellow("wrapped");
+						cheeseGrid[releaseRow][releaseCol] = new Yellow("wrapped");
 					} else if (color.equals("green")) {
-						cheeseGrid[Integer.parseInt(groo.substring(0,1))][Integer.parseInt(oop.substring(0,1))] = new Green("wrapped");
-					} else if (color.equals("blue")) {
-						cheeseGrid[Integer.parseInt(groo.substring(0,1))][Integer.parseInt(oop.substring(0,1))] = new Blue("wrapped");
+						cheeseGrid[releaseRow][releaseCol] = new Green("wrapped");
+					} else if (color.equals("blue")) { 
+						cheeseGrid[releaseRow][releaseCol] = new Blue("wrapped");
 					} else if (color.equals("purple")) {
-						cheeseGrid[Integer.parseInt(groo.substring(0,1))][Integer.parseInt(oop.substring(0,1))] = new Purple("wrapped");
+						cheeseGrid[releaseRow][releaseCol] = new Purple("wrapped");
 					}
 					for (int k = 1; k < Integer.parseInt(groo.substring(2,3)); k++) {
 						cheeseGrid[Integer.parseInt(groo.substring(0,1))][Integer.parseInt(groo.substring(1,2)) + k] = new Blank("blank");
@@ -379,13 +542,14 @@ public class CheeseCrushCanvas extends JComponent {
 						cheeseGrid[Integer.parseInt(oop.substring(1,2)) + k][Integer.parseInt(oop.substring(0,1))] = new Blank("blank");
 
 					}
+					score += 200;
 				}
 			}
 		}
 		// rows for 3-5
 		for (String grp : matchRows) {
 			for (int k = 0; k < Integer.parseInt(grp.substring(2,3)); k++) {
-				String color = cheeseGrid[Integer.parseInt(grp.substring(0,1))][Integer.parseInt(grp.substring(1,2))].getColor();
+//				String color = cheeseGrid[Integer.parseInt(grp.substring(0,1))][Integer.parseInt(grp.substring(1,2))].getColor();
 				if (cheeseGrid[Integer.parseInt(grp.substring(0,1))][Integer.parseInt(grp.substring(1,2)) + k].getStatus().equals("bottle")) {
 					wineY -= 50;
 					wineHeight += 50;
@@ -395,30 +559,37 @@ public class CheeseCrushCanvas extends JComponent {
 					game = false;
 					gameOver();
 				}
-				cheeseGrid[Integer.parseInt(grp.substring(0,1))][Integer.parseInt(grp.substring(1,2)) + k] = new Blank("blank");
 				if (Integer.parseInt(grp.substring(2,3)) == 4) {
-					if (color.equals("red")) {
-						cheeseGrid[Integer.parseInt(grp.substring(0,1))][Integer.parseInt(grp.substring(1,2))] = new Red("vertical");	
-					} else if (color.equals("orange")) {
-						cheeseGrid[Integer.parseInt(grp.substring(0,1))][releaseCol] = new Orange("vertical");
-					} else if (color.equals("yellow")) {
-						cheeseGrid[Integer.parseInt(grp.substring(0,1))][releaseCol] = new Yellow("vertical");
-					} else if (color.equals("green")) {
-						cheeseGrid[Integer.parseInt(grp.substring(0,1))][releaseCol] = new Green("vertical");
-					} else if (color.equals("blue")) {
-						cheeseGrid[Integer.parseInt(grp.substring(0,1))][releaseCol] = new Blue("vertical");
-					} else if (color.equals("purple")) {
-						cheeseGrid[Integer.parseInt(grp.substring(0,1))][releaseCol] = new Purple("vertical");
+					String color2 = cheeseGrid[Integer.parseInt(grp.substring(0,1))][Integer.parseInt(grp.substring(1,2))].getColor();
+					System.out.println("color2 is " + color2);
+					if (color2.equals("red")) {
+						cheeseGrid[releaseRow][releaseCol] = new Red("vertical");	
+					} else if (color2.equals("orange")) {
+						cheeseGrid[releaseRow][releaseCol] = new Orange("vertical");
+					} else if (color2.equals("yellow")) {
+						cheeseGrid[releaseRow][releaseCol] = new Yellow("vertical");
+					} else if (color2.equals("green")) {
+						cheeseGrid[releaseRow][releaseCol] = new Green("vertical");
+					} else if (color2.equals("blue")) {
+						cheeseGrid[releaseRow][releaseCol] = new Blue("vertical");
+					} else if (color2.equals("purple")) {
+						cheeseGrid[releaseRow][releaseCol] = new Purple("vertical");
 					}
+					score += 120;
 				} else if (Integer.parseInt(grp.substring(2,3)) == 5) {
-					cheeseGrid[Integer.parseInt(grp.substring(0,1))][releaseCol] = new Cheese("bomb");
+					cheeseGrid[releaseRow][releaseCol] = new Cheese("bomb");
+					score += 280;
+				}
+				if (!cheeseGrid[Integer.parseInt(grp.substring(0,1))][Integer.parseInt(grp.substring(1,2)) + k].getStatus().equals("wrapped") && !cheeseGrid[Integer.parseInt(grp.substring(0,1))][Integer.parseInt(grp.substring(1,2)) + k].getStatus().equals("horizontal") && !cheeseGrid[Integer.parseInt(grp.substring(0,1))][Integer.parseInt(grp.substring(1,2)) + k].getStatus().equals("vertical") && !cheeseGrid[Integer.parseInt(grp.substring(0,1))][Integer.parseInt(grp.substring(1,2)) + k].getStatus().equals("bomb")) {
+					cheeseGrid[Integer.parseInt(grp.substring(0,1))][Integer.parseInt(grp.substring(1,2)) + k] = new Blank("blank");
+					score += 60;
 				}
 			}
 		}
 		// columns for 3-5
 		for (String grp : matchCols) {
 			for (int k = 0; k < Integer.parseInt(grp.substring(2,3)); k++) {
-				String color = cheeseGrid[Integer.parseInt(grp.substring(1,2))][Integer.parseInt(grp.substring(0,1))].getColor();
+//				String color = cheeseGrid[Integer.parseInt(grp.substring(1,2))][Integer.parseInt(grp.substring(0,1))].getColor();
 				if (cheeseGrid[Integer.parseInt(grp.substring(1,2)) + k][Integer.parseInt(grp.substring(0,1))].getStatus().equals("bottle")) {
 					wineY -= 50;
 					wineHeight += 50;
@@ -428,23 +599,29 @@ public class CheeseCrushCanvas extends JComponent {
 					game = false;
 					gameOver();
 				}
-				cheeseGrid[Integer.parseInt(grp.substring(1,2)) + k][Integer.parseInt(grp.substring(0,1))] = new Blank("blank");
 				if (Integer.parseInt(grp.substring(2,3)) == 4) {
-					if (color.equals("red")) {
-						cheeseGrid[releaseRow][Integer.parseInt(grp.substring(0,1))] = new Red("horizontal");	
-					} else if (color.equals("orange")) {
-						cheeseGrid[releaseRow][Integer.parseInt(grp.substring(0,1))] = new Orange("horizontal");
-					} else if (color.equals("yellow")) {
-						cheeseGrid[releaseRow][Integer.parseInt(grp.substring(0,1))] = new Yellow("horizontal");
-					} else if (color.equals("green")) {
-						cheeseGrid[releaseRow][Integer.parseInt(grp.substring(0,1))] = new Green("horizontal");
-					} else if (color.equals("blue")) {
-						cheeseGrid[releaseRow][Integer.parseInt(grp.substring(0,1))] = new Blue("horizontal");
-					} else if (color.equals("purple")) {
-						cheeseGrid[releaseRow][Integer.parseInt(grp.substring(0,1))] = new Purple("horizontal");
+					String color2 = cheeseGrid[Integer.parseInt(grp.substring(1,2))][Integer.parseInt(grp.substring(0,1))].getColor();
+					if (color2.equals("red")) {
+						cheeseGrid[releaseRow][releaseCol] = new Red("horizontal");	
+					} else if (color2.equals("orange")) {
+						cheeseGrid[releaseRow][releaseCol] = new Orange("horizontal");
+					} else if (color2.equals("yellow")) {
+						cheeseGrid[releaseRow][releaseCol] = new Yellow("horizontal");
+					} else if (color2.equals("green")) {
+						cheeseGrid[releaseRow][releaseCol] = new Green("horizontal");
+					} else if (color2.equals("blue")) {
+						cheeseGrid[releaseRow][releaseCol] = new Blue("horizontal");
+					} else if (color2.equals("purple")) {
+						cheeseGrid[releaseRow][releaseCol] = new Purple("horizontal");
 					}
+					score += 120;
 				} else if (Integer.parseInt(grp.substring(2,3)) == 5) {
-					cheeseGrid[releaseRow][Integer.parseInt(grp.substring(0,1))] = new Cheese("bomb");
+					cheeseGrid[releaseRow][releaseCol] = new Cheese("bomb");
+					score += 280;
+				}
+				if (!cheeseGrid[Integer.parseInt(grp.substring(1,2)) + k][Integer.parseInt(grp.substring(0,1))].getStatus().equals("wrapped") && !cheeseGrid[Integer.parseInt(grp.substring(1,2)) + k][Integer.parseInt(grp.substring(0,1))].getStatus().equals("horizontal") && !cheeseGrid[Integer.parseInt(grp.substring(1,2)) + k][Integer.parseInt(grp.substring(0,1))].getStatus().equals("vertical") && !cheeseGrid[Integer.parseInt(grp.substring(1,2)) + k][Integer.parseInt(grp.substring(0,1))].getStatus().equals("bomb")) {
+					cheeseGrid[Integer.parseInt(grp.substring(1,2)) + k][Integer.parseInt(grp.substring(0,1))] = new Blank("blank");
+					score += 60;
 				}
 			}
 		}
@@ -474,13 +651,25 @@ public class CheeseCrushCanvas extends JComponent {
 		if (wineHeight == 454) {
 			winWidth = WIDTH;
 			winHeight = HEIGHT;
-			winMsg = "You've popped all the bottles!!!";
+			winMsg = "yEEEET! Your score is " + score + "!";
 			repaint();
 		} else if (moves == 0) {
 			winWidth = WIDTH;
 			winHeight = HEIGHT;
 			winMsg = "You lose! Press \"r\" to try again!";
 		}
+	}
+	
+	public void reset() {
+		score = 0;
+		moves = 60;
+		winWidth = 0;
+		winHeight = 0;
+		winMsg = "";
+		wineY = 498;
+		wineHeight = 4;
+		fillGrid(cheeseGrid);
+		repaint();
 	}
 
 	public void paintComponent(Graphics gr) {
