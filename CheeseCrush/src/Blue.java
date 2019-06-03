@@ -14,8 +14,10 @@ public class Blue extends Cheese {
 			img = new ImageIcon("blueBomb.png").getImage();
 		} else if (status.equals("bottle")) {
 			img = new ImageIcon("blueBottle.png").getImage();
-		} else if (status.equals("striped")) {
-			img = new ImageIcon("blueStriped.png").getImage();
+		} else if (status.equals("horizontal")) {
+			img = new ImageIcon("blueHorizStriped.png").getImage();
+		} else if (status.equals("vertical")) {
+			img = new ImageIcon("blueVertStriped.png").getImage();
 		} else if (status.equals("wrapped")) {
 			img = new ImageIcon("blueWrapped.png").getImage();
 		}
