@@ -14,8 +14,10 @@ public class Red extends Cheese {
 			img = new ImageIcon("redBomb.png").getImage();
 		} else if (status.equals("bottle")) {
 			img = new ImageIcon("redBottle.png").getImage();
-		} else if (status.equals("striped")) {
-			img = new ImageIcon("redStriped.png").getImage();
+		} else if (status.equals("horizontal")) {
+			img = new ImageIcon("redHorizStriped.png").getImage();
+		} else if (status.equals("vertical")) {
+			img = new ImageIcon("redVertStriped.png").getImage();
 		} else if (status.equals("wrapped")) {
 			img = new ImageIcon("redWrapped.png").getImage();
 		}
