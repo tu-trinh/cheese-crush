@@ -14,8 +14,10 @@ public class Yellow extends Cheese {
 			img = new ImageIcon("yellowBomb.png").getImage();
 		} else if (status.equals("bottle")) {
 			img = new ImageIcon("yellowBottle.png").getImage();
-		} else if (status.equals("striped")) {
-			img = new ImageIcon("yellowStriped.png").getImage();
+		} else if (status.equals("horizontal")) {
+			img = new ImageIcon("yellowHorizStriped.png").getImage();
+		} else if (status.equals("vertical")) {
+			img = new ImageIcon("yellowVertStriped.png").getImage();
 		} else if (status.equals("wrapped")) {
 			img = new ImageIcon("yellowWrapped.png").getImage();
 		}
