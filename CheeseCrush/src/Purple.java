@@ -14,8 +14,10 @@ public class Purple extends Cheese {
 			img = new ImageIcon("purpleBomb.png").getImage();
 		} else if (status.equals("bottle")) {
 			img = new ImageIcon("purpleBottle.png").getImage();
-		} else if (status.equals("striped")) {
-			img = new ImageIcon("purpleStriped.png").getImage();
+		} else if (status.equals("horizontal")) {
+			img = new ImageIcon("purpleHorizStriped.png").getImage();
+		} else if (status.equals("vertical")) {
+			img = new ImageIcon("purpleVertStriped.png").getImage();
 		} else if (status.equals("wrapped")) {
 			img = new ImageIcon("purpleWrapped.png").getImage();
 		}
